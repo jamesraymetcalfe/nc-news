@@ -9,11 +9,16 @@ const {
   handleCustomErrors,
   handlePsqlErrors,
 } = require("./errors/errors");
-const { getArticlesByID } = require("./controllers/articles-controller");
+const {
+  getArticlesByID,
+  getAllArticles,
+} = require("./controllers/articles-controller");
 
 app.get("/api", getEndpoints);
 
 app.get("/api/topics", getAllTopics);
+
+app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:articles_id", getArticlesByID);
 
