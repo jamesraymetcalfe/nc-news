@@ -8,11 +8,13 @@ const {
   handleServerErrors,
   handleCustomErrors,
   handlePsqlErrors,
-} = require("./errors/errors");
+  handleInvalidEndpoints,
+} = require("./controllers/errors-controller");
 const {
   getArticlesByID,
   getAllArticles,
 } = require("./controllers/articles-controller");
+const { getCommentsByArticleID } = require("./controllers/comments-controller");
 
 app.get("/api", getEndpoints);
 
@@ -22,9 +24,9 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:articles_id", getArticlesByID);
 
-app.all("/*", (request, response, next) => {
-  response.status(404).send({ msg: "path not found" });
-});
+app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
+
+app.all("/*", handleInvalidEndpoints);
 
 app.use(handleCustomErrors);
 

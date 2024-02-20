@@ -1,3 +1,7 @@
+exports.handleInvalidEndpoints = (request, response, next) => {
+  response.status(404).send({ msg: "path not found" });
+};
+
 exports.handleCustomErrors = (err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
