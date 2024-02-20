@@ -4,6 +4,8 @@ const {
   formatComments,
 } = require("../db/seeds/utils");
 
+const { checkExists } = require("../utils");
+
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
@@ -102,3 +104,12 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
+
+// describe("checkExistsFunctions", () => {
+//   test("checkExists returns an object with a 404 error when passed value that does not exist in a given table and column", () => {
+//     const table = "articles";
+//     const column = "article_id";
+//     const value = 9999;
+//     checkExists(table, column, value)=
+//   });
+// });

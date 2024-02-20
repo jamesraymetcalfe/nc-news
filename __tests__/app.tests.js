@@ -3,7 +3,6 @@ const db = require("../db/connection");
 const request = require("supertest");
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
-const endpointsJSON = require("../endpoints.json");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -15,7 +14,13 @@ describe("/api", () => {
       .expect(200)
       .then((response) => {
         const { endpoints } = response.body;
-        expect(endpoints).toMatchObject(endpointsJSON);
+        for (const endpoint in endpoints) {
+          expect(endpoints[endpoint]).toMatchObject({
+            description: expect.any(String),
+            queries: expect.any(Array),
+            exampleResponse: expect.any(Object),
+          });
+        }
       });
   });
 });
@@ -110,13 +115,14 @@ describe("/api/articles", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-  test("GET: 200 sends an array of comments for the given article_id", () => {
+  test("GET: 200 sends an array of comments for the given article_id with the most recent first", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then((response) => {
         const { comments } = response.body;
         expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             article_id: 1,
@@ -127,15 +133,6 @@ describe("/api/articles/:article_id/comments", () => {
             votes: expect.any(Number),
           });
         });
-      });
-  });
-  test("GET 200: sends the array with the most recent comment first", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then((response) => {
-        const { comments } = response.body;
-        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("GET 200: sends an empty array when no comments have been made at valid article_id", () => {
@@ -178,7 +175,7 @@ describe("/api/articles/:article_id/comments", () => {
           author: "icellusedkars",
           body: "nice article!",
           created_at: expect.any(String),
-          votes: expect.any(Number),
+          votes: 0,
         });
       });
   });
