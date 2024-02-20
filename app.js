@@ -14,7 +14,9 @@ const {
   getArticlesByID,
   getAllArticles,
 } = require("./controllers/articles-controller");
-const { getCommentsByArticleID } = require("./controllers/comments-controller");
+const { getCommentsByArticleID, postComment } = require("./controllers/comments-controller");
+
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 
@@ -25,6 +27,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:articles_id", getArticlesByID);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
+
+app.post("/api/articles/:article_id/comments", postComment)
 
 app.all("/*", handleInvalidEndpoints);
 
