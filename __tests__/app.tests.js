@@ -164,6 +164,75 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("bad request");
       });
   });
+  test("POST:201 inserts a new comment to the db and sends the comment back to the client", () => {
+    const newComment = { username: "icellusedkars", body: "nice article!" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        const { comment } = response.body;
+        expect(comment).toMatchObject({
+          article_id: 2,
+          comment_id: expect.any(Number),
+          author: "icellusedkars",
+          body: "nice article!",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test("POST:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    const newComment = { username: "icellusedkars", body: "nice article!" };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("article does not exist");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when given an invalid id", () => {
+    const newComment = { username: "icellusedkars", body: "nice article!" };
+    return request(app)
+      .post("/api/articles/forklift/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error when new comment is missing a required field", () => {
+    const newComment = { body: "nice article!" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error when comment body is an empty string", () => {
+    const newComment = { username: "icellusedkars", body: "" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error when user does not exist", () => {
+    const newComment = { username: "jimmy_met", body: "nice article!" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request");
+      });
+  });
 });
 
 describe("GET 404 - invalid endpoint", () => {
