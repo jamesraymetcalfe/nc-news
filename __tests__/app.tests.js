@@ -147,10 +147,10 @@ describe("/api/articles/:article_id/comments", () => {
   test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/9999/comments")
-      .expect(404)
+      .expect(400)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("article does not exist");
+        expect(msg).toBe("article_id 9999 does not exist");
       });
   });
   test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -179,15 +179,15 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("POST:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+  test("POST:400 sends an appropriate status and error message when given a valid but non-existent id", () => {
     const newComment = { username: "icellusedkars", body: "nice article!" };
     return request(app)
       .post("/api/articles/9999/comments")
       .send(newComment)
-      .expect(404)
+      .expect(400)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("article does not exist");
+        expect(msg).toBe("article_id 9999 does not exist");
       });
   });
   test("POST:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -227,7 +227,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const {msg} = response.body
+        expect(msg).toBe('username jimmy_met does not exist');
       });
   });
 });
