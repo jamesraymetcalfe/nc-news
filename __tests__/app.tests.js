@@ -9,7 +9,7 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("/api", () => {
-  test("GET 200: sends an object describing all the available endpoints", () => {
+  test("GET:200 sends an object describing all the available endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -21,7 +21,7 @@ describe("/api", () => {
 });
 
 describe("/api/topics", () => {
-  test("GET 200: sends an array of all the topics to the client", () => {
+  test("GET:200 sends an array of all the topics to the client", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -39,7 +39,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  test("GET 200: sends an array of all the articles to the client", () => {
+  test("GET:200 sends an array of all the articles to the client", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -60,7 +60,7 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 200: returned array is sorted by date in descending order", () => {
+  test("GET:200 returned array is sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -69,10 +69,31 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-});
+//   test.only("GET:200 sends an array filtered by the topic query", () => {
+//     return request(app)
+//       .get("/api/articles?topic=mitch")
+//       .expect(200)
+//       .then((response) => {
+//         const { articles } = response.body;
+//         expect(articles).toHaveLength(12);
+//         articles.forEach((article) => {
+//           expect(article).toMatchObject({
+//             author: expect.any(String),
+//             title: expect.any(String),
+//             article_id: expect.any(Number),
+//             topic: "mitch",
+//             created_at: expect.any(String),
+//             votes: expect.any(Number),
+//             article_img_url: expect.any(String),
+//             comment_count: expect.any(String),
+//           });
+//         });
+//       });
+//   });
+// });
 
 describe("/api/articles/:articles_id", () => {
-  test("GET: 200 sends a single article to the client", () => {
+  test("GET:200 sends a single article to the client", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
@@ -107,7 +128,7 @@ describe("/api/articles/:articles_id", () => {
         expect(response.body.msg).toBe("bad request");
       });
   });
-  test("PATCH: 200 sends the updated article to the client", () => {
+  test("PATCH:200 sends the updated article to the client", () => {
     const vote = { inc_votes: 1 };
     return request(app)
       .patch("/api/articles/1")
@@ -184,7 +205,7 @@ describe("/api/articles/:articles_id", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-  test("GET: 200 sends an array of comments for the given article_id", () => {
+  test("GET:200 sends an array of comments for the given article_id", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -203,7 +224,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("GET 200: sends the array with the most recent comment first", () => {
+  test("GET:200 sends the array with the most recent comment first", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -212,7 +233,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("GET 200: sends an empty array when no comments have been made at valid article_id", () => {
+  test("GET:200 sends an empty array when no comments have been made at valid article_id", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
@@ -339,7 +360,7 @@ describe("/api/comments/:comment_id", () => {
 });
 
 describe("GET /api/users", () => {
-  test("sends an array of all the topics to the client", () => {
+  test("GET:200 sends an array of all the topics to the client", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
