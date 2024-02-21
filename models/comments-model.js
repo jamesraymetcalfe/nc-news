@@ -18,14 +18,14 @@ exports.insertComment = (article_id, { username, body }) => {
       if (data.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "article does not exist" });
       }
-  return db
-    .query(
-      `INSERT INTO comments (article_id, author, body, created_at, votes)
+      return db.query(
+        `INSERT INTO comments (article_id, author, body, created_at, votes)
       VALUES ($1, $2, $3, CURRENT_TIMESTAMP, 0)
       RETURNING *;`,
-      [article_id, username, body]
-    )
-    }).then((data) => {
+        [article_id, username, body]
+      );
+    })
+    .then((data) => {
       if (data.rows[0].body === "") {
         return Promise.reject({ status: 400, msg: "bad request" });
       }
