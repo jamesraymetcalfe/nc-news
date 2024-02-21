@@ -13,8 +13,14 @@ const {
 const {
   getArticlesByID,
   getAllArticles,
+  patchArticleByID,
 } = require("./controllers/articles-controller");
-const { getCommentsByArticleID, postComment } = require("./controllers/comments-controller");
+const {
+  getCommentsByArticleID,
+  postComment,
+  deleteCommentByID,
+} = require("./controllers/comments-controller");
+const { getAllUsers } = require("./controllers/users-controller");
 
 app.use(express.json());
 
@@ -22,13 +28,19 @@ app.get("/api", getEndpoints);
 
 app.get("/api/topics", getAllTopics);
 
+app.get("/api/users", getAllUsers);
+
 app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:articles_id", getArticlesByID);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
+app.patch("/api/articles/:articles_id", patchArticleByID);
 
-app.post("/api/articles/:article_id/comments", postComment)
+app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
+
+app.post("/api/articles/:article_id/comments", postComment);
+
+app.delete("/api/comments/:comment_id", deleteCommentByID);
 
 app.all("/*", handleInvalidEndpoints);
 

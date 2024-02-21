@@ -43,6 +43,39 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles", () => {
+  test("GET 200: sends an array of all the articles to the client", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toHaveLength(13);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET 200: returned array is sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
 describe("/api/articles/:articles_id", () => {
   test("GET: 200 sends a single article to the client", () => {
     return request(app)
@@ -79,37 +112,78 @@ describe("/api/articles/:articles_id", () => {
         expect(response.body.msg).toBe("bad request");
       });
   });
-});
-
-describe("/api/articles", () => {
-  test("GET 200: sends an array of all the articles to the client", () => {
+  test("PATCH: 200 sends the updated article to the client", () => {
+    const vote = { inc_votes: 1 };
     return request(app)
-      .get("/api/articles")
+      .patch("/api/articles/1")
+      .send(vote)
       .expect(200)
       .then((response) => {
-        const { articles } = response.body;
-        expect(articles).toHaveLength(13);
-        articles.forEach((article) => {
-          expect(article).toMatchObject({
-            author: expect.any(String),
-            title: expect.any(String),
-            article_id: expect.any(Number),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-            comment_count: expect.any(String),
-          });
+        const { article } = response.body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 101,
+          article_img_url: expect.any(String),
         });
       });
   });
-  test("GET 200: returned array is sorted by date in descending order", () => {
+  test("PATCH:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    const vote = { inc_votes: 1 };
     return request(app)
-      .get("/api/articles")
-      .expect(200)
+      .patch("/api/articles/9999")
+      .send(vote)
+      .expect(404)
       .then((response) => {
-        const { articles } = response.body;
-        expect(articles).toBeSortedBy("created_at", { descending: true });
+        const { msg } = response.body;
+        expect(msg).toBe("article does not exist");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when given an invalid id", () => {
+    const vote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/forklift")
+      .send(vote)
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error when the vote value is 0", () => {
+    const vote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when given an invalid vote", () => {
+    const vote = { inc_votes: "forklift" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the request is more than a single vote", () => {
+    const vote = { inc_votes: -100 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("bad request");
       });
   });
 });
@@ -158,7 +232,8 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/forklift/comments")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:201 inserts a new comment to the db and sends the comment back to the client", () => {
@@ -197,7 +272,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when new comment is missing a required field", () => {
@@ -207,7 +283,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when comment body is an empty string", () => {
@@ -217,7 +294,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when user does not exist", () => {
@@ -229,6 +307,49 @@ describe("/api/articles/:article_id/comments", () => {
       .then((response) => {
         const {msg} = response.body
         expect(msg).toBe('username jimmy_met does not exist');
+      });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE:204 deletes the specified comment and sends back an appropriate status code", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("comment does not exist");
+      });
+  });
+  test("DELETE:400 sends an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/forklift")
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("sends an array of all the topics to the client", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const { users } = response.body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
