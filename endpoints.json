@@ -59,5 +59,59 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:articles_id/comments": {
+    "description": "adds a comment for the given article",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "article_id": 2,
+          "comment_id": 5,
+          "author": "icellusedkars",
+          "body": "text from the article...",
+          "created_at": "2020-01-01T03:08:00.000Z",
+          "votes": 0
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:articles_id": {
+    "description": "adds a comment for the given article",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 2,
+          "title": "Sony Vaio; or, The Laptop",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "body": "text from the article...",
+          "created_at": "2020-10-16T05:03:00.000Z",
+          "votes": 1,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "delete the given comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [{}]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
   }
 }

@@ -315,7 +315,7 @@ describe("/api/articles/:article_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
-  test("DELETE:204 deletes the specified team and sends back an appropriate status code", () => {
+  test("DELETE:204 deletes the specified comment and sends back an appropriate status code", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
   test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -334,6 +334,25 @@ describe("/api/comments/:comment_id", () => {
       .then((response) => {
         const { msg } = response.body;
         expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("sends an array of all the topics to the client", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const { users } = response.body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
