@@ -105,11 +105,12 @@ describe("formatComments", () => {
   });
 });
 
-// describe("checkExistsFunctions", () => {
-//   test("checkExists returns an object with a 404 error when passed value that does not exist in a given table and column", () => {
-//     const table = "articles";
-//     const column = "article_id";
-//     const value = 9999;
-//     checkExists(table, column, value)=
-//   });
-// });
+describe("checkExistsFunctions", () => {
+  test("checkExists returns an object with a 400 error when passed a value that does not exist in a given table and column", () => {
+    const table = "articles";
+    const column = "article_id";
+    const value = 9999;
+    const expected = { msg: "article_id 9999 does not exist", status: 400 };
+    return expect(checkExists(table, column, value)).rejects.toEqual(expected);
+  });
+});
