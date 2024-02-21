@@ -1,4 +1,3 @@
-const { request } = require("../app");
 const {
   selectArticlesByID,
   selectAllArticles,
@@ -28,7 +27,7 @@ exports.getArticlesByID = (request, response, next) => {
 
 exports.patchArticleByID = (request, response, next) => {
   const { articles_id } = request.params;
-  const {inc_votes} = request.body
+  const { inc_votes } = request.body;
   updateArticleByID(inc_votes, articles_id)
     .then((article) => {
       response.status(200).send({ article });

@@ -20,12 +20,15 @@ const {
   postComment,
   deleteCommentByID,
 } = require("./controllers/comments-controller");
+const { getAllUsers } = require("./controllers/users-controller");
 
 app.use(express.json());
 
 app.get("/api", getEndpoints);
 
 app.get("/api/topics", getAllTopics);
+
+app.get("/api/users", getAllUsers);
 
 app.get("/api/articles", getAllArticles);
 
