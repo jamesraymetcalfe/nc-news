@@ -145,7 +145,8 @@ describe("/api/articles/:articles_id", () => {
       .send(vote)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("PATCH:400 sends an appropriate status and error when the vote value is 0", () => {
@@ -155,7 +156,8 @@ describe("/api/articles/:articles_id", () => {
       .send(vote)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("PATCH:400 sends an appropriate status and error message when given an invalid vote", () => {
@@ -165,7 +167,8 @@ describe("/api/articles/:articles_id", () => {
       .send(vote)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("PATCH:400 sends an appropriate status and error message when the request is more than a single vote", () => {
@@ -232,7 +235,8 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/forklift/comments")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:201 inserts a new comment to the db and sends the comment back to the client", () => {
@@ -271,7 +275,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when new comment is missing a required field", () => {
@@ -281,7 +286,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when comment body is an empty string", () => {
@@ -291,7 +297,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
   test("POST:400 sends an appropriate status and error when user does not exist", () => {
@@ -301,7 +308,32 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
+      });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE:204 deletes the specified team and sends back an appropriate status code", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("comment does not exist");
+      });
+  });
+  test("DELETE:400 sends an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/forklift")
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
 });
