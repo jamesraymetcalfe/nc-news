@@ -1,9 +1,6 @@
 const express = require("express");
 const app = express();
-const {
-  getAllTopics,
-  getEndpoints,
-} = require("./controllers/topics-controller");
+const { getAllTopics } = require("./controllers/topics-controller");
 const {
   handleServerErrors,
   handleCustomErrors,
@@ -21,6 +18,7 @@ const {
   deleteCommentByID,
 } = require("./controllers/comments-controller");
 const { getAllUsers } = require("./controllers/users-controller");
+const { getEndpoints } = require("./controllers/api-controller");
 
 app.use(express.json());
 

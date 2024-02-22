@@ -102,6 +102,7 @@ describe("/api/articles", () => {
       .then((response) => {
         const { articles } = response.body;
         expect(articles).toHaveLength(0);
+        expect(Array.isArray(articles)).toBe(true);
       });
   });
   test("GET:404 sends an appropriate status and error when given a valid but non - existent topic query ", () => {
@@ -173,6 +174,66 @@ describe("/api/articles/:articles_id", () => {
         });
       });
   });
+  test("PATCH:200 sends the original article when inc_vote is zero", () => {
+    const vote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 100,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("PATCH:200 sends an updated article with the votes decreased when inc_vote is negative", () => {
+    const vote = { inc_votes: -50 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 50,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("PATCH:200 sends an updated article with the votes increased correctly when inc_vote is more than one", () => {
+    const vote = { inc_votes: 50 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(vote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 150,
+          article_img_url: expect.any(String),
+        });
+      });
+  })
   test("PATCH:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     const vote = { inc_votes: 1 };
     return request(app)
@@ -195,17 +256,6 @@ describe("/api/articles/:articles_id", () => {
         expect(msg).toBe("bad request");
       });
   });
-  test("PATCH:400 sends an appropriate status and error when the vote value is 0", () => {
-    const vote = { inc_votes: 0 };
-    return request(app)
-      .patch("/api/articles/1")
-      .send(vote)
-      .expect(400)
-      .then((response) => {
-        const { msg } = response.body;
-        expect(msg).toBe("bad request");
-      });
-  });
   test("PATCH:400 sends an appropriate status and error message when given an invalid vote", () => {
     const vote = { inc_votes: "forklift" };
     return request(app)
@@ -217,14 +267,15 @@ describe("/api/articles/:articles_id", () => {
         expect(msg).toBe("bad request");
       });
   });
-  test("PATCH:400 sends an appropriate status and error message when the request is more than a single vote", () => {
-    const vote = { inc_votes: -100 };
+  test("PATCH:400 sends an appropriate status and error message when inc_vote is missing", () => {
+    const vote = { inc_votes: ""};
     return request(app)
       .patch("/api/articles/1")
       .send(vote)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
 });
@@ -257,6 +308,7 @@ describe("/api/articles/:article_id/comments", () => {
       .then((response) => {
         const { comments } = response.body;
         expect(comments).toHaveLength(0);
+        expect(Array.isArray(comments)).toBe(true);
       });
   });
   test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
