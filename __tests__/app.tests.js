@@ -8,7 +8,7 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("/api", () => {
-  test("GET 200: sends an object describing all the available endpoints", () => {
+  test("GET:200 sends an object describing all the available endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -26,7 +26,7 @@ describe("/api", () => {
 });
 
 describe("/api/topics", () => {
-  test("GET 200: sends an array of all the topics to the client", () => {
+  test("GET:200 sends an array of all the topics to the client", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -44,7 +44,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  test("GET 200: sends an array of all the articles to the client", () => {
+  test("GET:200 sends an array of all the articles to the client", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -65,7 +65,7 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 200: returned array is sorted by date in descending order", () => {
+  test("GET:200 returned array is sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -74,10 +74,49 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("GET:200 sends an array filtered by the topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET:200 sends an empty array when no articles exist for a valid topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toHaveLength(0);
+      });
+  });
+  test("GET:404 sends an appropriate status and error when given a valid but non - existent topic query ", () => {
+    return request(app)
+      .get("/api/articles?topic=forklift")
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("forklift does not exist in column - slug");
+      });
+  });
 });
 
 describe("/api/articles/:articles_id", () => {
-  test("GET: 200 sends a single article to the client", () => {
+  test("GET:200 sends a single article to the client", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
@@ -109,10 +148,11 @@ describe("/api/articles/:articles_id", () => {
       .get("/api/articles/forklift")
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("bad request");
+        const { msg } = response.body;
+        expect(msg).toBe("bad request");
       });
   });
-  test("PATCH: 200 sends the updated article to the client", () => {
+  test("PATCH:200 sends the updated article to the client", () => {
     const vote = { inc_votes: 1 };
     return request(app)
       .patch("/api/articles/1")
@@ -221,10 +261,10 @@ describe("/api/articles/:article_id/comments", () => {
   test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/9999/comments")
-      .expect(400)
+      .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("article_id 9999 does not exist");
+        expect(msg).toBe("9999 does not exist in column - article_id");
       });
   });
   test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -254,15 +294,15 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("POST:400 sends an appropriate status and error message when given a valid but non-existent id", () => {
+  test("POST:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     const newComment = { username: "icellusedkars", body: "nice article!" };
     return request(app)
       .post("/api/articles/9999/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("article_id 9999 does not exist");
+        expect(msg).toBe("9999 does not exist in column - article_id");
       });
   });
   test("POST:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -298,15 +338,15 @@ describe("/api/articles/:article_id/comments", () => {
         expect(msg).toBe("bad request");
       });
   });
-  test("POST:400 sends an appropriate status and error when user does not exist", () => {
+  test("POST:404 sends an appropriate status and error when user does not exist", () => {
     const newComment = { username: "jimmy_met", body: "nice article!" };
     return request(app)
       .post("/api/articles/2/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then((response) => {
-        const {msg} = response.body
-        expect(msg).toBe('username jimmy_met does not exist');
+        const { msg } = response.body;
+        expect(msg).toBe("jimmy_met does not exist in column - username");
       });
   });
 });
@@ -336,7 +376,7 @@ describe("/api/comments/:comment_id", () => {
 });
 
 describe("GET /api/users", () => {
-  test("sends an array of all the topics to the client", () => {
+  test("GET:200 sends an array of all the topics to the client", () => {
     return request(app)
       .get("/api/users")
       .expect(200)

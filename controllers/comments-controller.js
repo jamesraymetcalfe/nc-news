@@ -3,7 +3,6 @@ const {
   insertComment,
   removeCommentByID,
 } = require("../models/comments-model");
-const { selectArticlesByID } = require("../models/articles-model");
 
 exports.getCommentsByArticleID = (request, response, next) => {
   const { article_id } = request.params;
