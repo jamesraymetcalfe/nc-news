@@ -1,3 +1,4 @@
+const db = require("../db/connection");
 const {
   convertTimestampToDate,
   createRef,
@@ -5,6 +6,8 @@ const {
 } = require("../db/seeds/utils");
 
 const { checkExists } = require("../utils");
+
+afterAll(() => db.end());
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -110,7 +113,7 @@ describe("checkExistsFunctions", () => {
     const table = "articles";
     const column = "article_id";
     const value = 9999;
-    const expected = { msg: "article_id 9999 does not exist", status: 400 };
+    const expected = { msg: "9999 does not exist in column - article_id", status: 404 };
     return expect(checkExists(table, column, value)).rejects.toEqual(expected);
   });
 });

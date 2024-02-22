@@ -1,19 +1,50 @@
 const db = require("../db/connection");
+const { checkExists } = require("../utils");
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url,
+exports.selectAllArticles = (topic = null) => {
+  if (topic === null) {
+    let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url,
+    COUNT (comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id `;
+
+    const queryVals = [];
+
+    if (topic) {
+      queryString += `WHERE topic = $1 `;
+      queryVals.push(topic);
+    }
+
+    queryString += `GROUP BY articles.article_id
+    ORDER BY articles.created_at DESC;`;
+
+    return db.query(queryString, queryVals).then((data) => {
+      return data.rows;
+    });
+  } else {
+    return checkExists("topics", "slug", topic).then(() => {
+      let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url,
   COUNT (comments.comment_id) AS comment_count
   FROM articles
   LEFT JOIN comments
-  ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC;`
-    )
-    .then((data) => {
-      return data.rows;
+  ON articles.article_id = comments.article_id `;
+
+      const queryVals = [];
+
+      if (topic) {
+        queryString += `WHERE topic = $1 `;
+        queryVals.push(topic);
+      }
+
+      queryString += `GROUP BY articles.article_id
+  ORDER BY articles.created_at DESC;`;
+
+      return db.query(queryString, queryVals).then((data) => {
+        return data.rows;
+      });
     });
+  }
 };
 
 exports.selectArticlesByID = (articles_id) => {

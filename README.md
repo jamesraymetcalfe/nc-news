@@ -1,6 +1,9 @@
 # Northcoders News API
 
-To successfully connect to the two databases locally, follow these steps:
+Setting Up the databases
 
-1. Create env. files - one for .development and one for .test
-2. In the .development add "PGDATABASE=nc_news" and in the .test "add PGDATABASE=nc_news_test"
+'npm run setup-dbs'
+
+This command will set up both the development and test databases, ready to be seeded.
+
+This command can also work as a reset button. It will drop the databases and recreate them, if needed.

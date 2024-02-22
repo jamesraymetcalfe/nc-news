@@ -6,8 +6,8 @@ exports.checkExists = (table, column, value) => {
   return db.query(queryStr, [value]).then((result) => {
     if (result.rows.length === 0) {
       return Promise.reject({
-        status: 400,
-        msg: `${column} ${value} does not exist`,
+        status: 404,
+        msg: `${value} does not exist in column - ${column}`,
       });
     }
   });
