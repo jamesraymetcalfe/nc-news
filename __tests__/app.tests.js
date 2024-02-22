@@ -118,12 +118,12 @@ describe("/api/articles", () => {
 describe("/api/articles/:articles_id", () => {
   test("GET:200 sends a single article to the client", () => {
     return request(app)
-      .get("/api/articles/2")
+      .get("/api/articles/1")
       .expect(200)
       .then((response) => {
         const { article } = response.body;
         expect(article).toMatchObject({
-          article_id: 2,
+          article_id: 1,
           title: expect.any(String),
           topic: expect.any(String),
           author: expect.any(String),
@@ -131,6 +131,7 @@ describe("/api/articles/:articles_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
+          comment_count: "11",
         });
       });
   });
