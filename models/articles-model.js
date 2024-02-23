@@ -1,7 +1,26 @@
 const db = require("../db/connection");
 const { checkExists } = require("../utils");
 
-exports.selectAllArticles = (topic = null) => {
+exports.selectAllArticles = (
+  topic = null,
+  sort_by = "created_at",
+  order = "DESC"
+) => {
+  const validSortBys = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  const validOrders = ["ASC", "DESC"];
+  if (!validSortBys.includes(sort_by) || !validOrders.includes(order)) {
+    return Promise.reject({ status: 404, msg: `query does not exist` });
+  }
+
   if (topic === null) {
     let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url,
     COUNT (comments.comment_id) AS comment_count
@@ -17,7 +36,7 @@ exports.selectAllArticles = (topic = null) => {
     }
 
     queryString += `GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;`;
+    ORDER BY ${sort_by} ${order};`;
 
     return db.query(queryString, queryVals).then((data) => {
       return data.rows;
@@ -38,7 +57,7 @@ exports.selectAllArticles = (topic = null) => {
       }
 
       queryString += `GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC;`;
+      ORDER BY ${sort_by} ${order};`;
 
       return db.query(queryString, queryVals).then((data) => {
         return data.rows;
