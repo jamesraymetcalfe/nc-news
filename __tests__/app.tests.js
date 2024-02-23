@@ -65,13 +65,49 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET:200 returned array is sorted by date in descending order", () => {
+  test("GET:200 sends an array of articles sorted by date in descending order by default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
         const { articles } = response.body;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET:200 sends an array of articles in ascending order when is set to asc by a query", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("GET:400 ends an appropriate status and error given a non - existent sort_by query", () => {
+    return request(app)
+      .get("/api/articles?order=rubbish")
+      .expect(404)
+      .then((response) => {
+        const error = response.body;
+        expect(error.msg).toBe("query does not exist");
+      });
+  });
+  test("GET:200 sends an array of all the articles sorted by the given column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("GET:404 sends an appropriate status and error when given a non - existent sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=forklift")
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("query does not exist");
       });
   });
   test("GET:200 sends an array filtered by the topic query", () => {
@@ -105,7 +141,7 @@ describe("/api/articles", () => {
         expect(Array.isArray(articles)).toBe(true);
       });
   });
-  test("GET:404 sends an appropriate status and error when given a valid but non - existent topic query ", () => {
+  test("GET:404 sends an appropriate status and error when given a non - existent topic query", () => {
     return request(app)
       .get("/api/articles?topic=forklift")
       .expect(404)
@@ -233,7 +269,7 @@ describe("/api/articles/:articles_id", () => {
           article_img_url: expect.any(String),
         });
       });
-  })
+  });
   test("PATCH:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     const vote = { inc_votes: 1 };
     return request(app)
@@ -268,7 +304,7 @@ describe("/api/articles/:articles_id", () => {
       });
   });
   test("PATCH:400 sends an appropriate status and error message when inc_vote is missing", () => {
-    const vote = { inc_votes: ""};
+    const vote = { inc_votes: "" };
     return request(app)
       .patch("/api/articles/1")
       .send(vote)
