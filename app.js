@@ -1,44 +1,16 @@
 const express = require("express");
 const app = express();
-const { getAllTopics } = require("./controllers/topics-controller");
+const apiRouter = require("./routes/api-router");
 const {
   handleServerErrors,
   handleCustomErrors,
   handlePsqlErrors,
   handleInvalidEndpoints,
-} = require("./controllers/errors-controller");
-const {
-  getArticlesByID,
-  getAllArticles,
-  patchArticleByID,
-} = require("./controllers/articles-controller");
-const {
-  getCommentsByArticleID,
-  postComment,
-  deleteCommentByID,
-} = require("./controllers/comments-controller");
-const { getAllUsers } = require("./controllers/users-controller");
-const { getEndpoints } = require("./controllers/api-controller");
+} = require("./Errors/errors");
 
 app.use(express.json());
 
-app.get("/api", getEndpoints);
-
-app.get("/api/topics", getAllTopics);
-
-app.get("/api/users", getAllUsers);
-
-app.get("/api/articles", getAllArticles);
-
-app.get("/api/articles/:articles_id", getArticlesByID);
-
-app.patch("/api/articles/:articles_id", patchArticleByID);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
-
-app.post("/api/articles/:article_id/comments", postComment);
-
-app.delete("/api/comments/:comment_id", deleteCommentByID);
+app.use("/api", apiRouter);
 
 app.all("/*", handleInvalidEndpoints);
 

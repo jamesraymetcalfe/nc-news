@@ -1,8 +1,9 @@
-const { sort } = require("../db/data/test-data/users");
 const {
   selectArticlesByID,
   selectAllArticles,
   updateArticleByID,
+  selectCommentsByArticleID,
+  insertCommentToArticle,
 } = require("../models/articles-model");
 
 exports.getAllArticles = (request, response, next) => {
@@ -33,6 +34,29 @@ exports.patchArticleByID = (request, response, next) => {
   updateArticleByID(inc_votes, articles_id)
     .then((article) => {
       response.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getCommentsByArticleID = (request, response, next) => {
+  const { article_id } = request.params;
+  selectCommentsByArticleID(article_id)
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postCommentToArticle = (request, response, next) => {
+  const { article_id } = request.params;
+  const newComment = request.body;
+  insertCommentToArticle(article_id, newComment)
+    .then((comment) => {
+      response.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);
