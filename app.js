@@ -7,6 +7,9 @@ const {
   handlePsqlErrors,
   handleInvalidEndpoints,
 } = require("./Errors/errors");
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
 
