@@ -80,7 +80,7 @@
     }
   },
   "PATCH /api/articles/:articles_id": {
-    "description": "adds a comment for the given article",
+    "description": "updates the votes for the given article",
     "queries": [],
     "exampleResponse": {
       "article": [
