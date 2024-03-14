@@ -147,7 +147,7 @@ describe("/api/articles", () => {
       .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("forklift does not exist in column - slug");
+        expect(msg).toBe("forklift does not exist");
       });
   });
 });
@@ -353,7 +353,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("9999 does not exist in column - article_id");
+        expect(msg).toBe("9999 does not exist");
       });
   });
   test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -391,7 +391,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("9999 does not exist in column - article_id");
+        expect(msg).toBe("9999 does not exist");
       });
   });
   test("POST:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -435,7 +435,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
         const { msg } = response.body;
-        expect(msg).toBe("jimmy_met does not exist in column - username");
+        expect(msg).toBe("jimmy_met does not exist");
       });
   });
 });

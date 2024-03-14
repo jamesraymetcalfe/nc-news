@@ -113,7 +113,7 @@ describe("checkExistsFunctions", () => {
     const table = "articles";
     const column = "article_id";
     const value = 9999;
-    const expected = { msg: "9999 does not exist in column - article_id", status: 404 };
+    const expected = { msg: "9999 does not exist", status: 404 };
     return expect(checkExists(table, column, value)).rejects.toEqual(expected);
   });
 });

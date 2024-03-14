@@ -7,7 +7,7 @@ exports.checkExists = (table, column, value) => {
     if (result.rows.length === 0) {
       return Promise.reject({
         status: 404,
-        msg: `${value} does not exist in column - ${column}`,
+        msg: `${value} does not exist`,
       });
     }
   });
