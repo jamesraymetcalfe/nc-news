@@ -15,6 +15,7 @@ exports.selectAllArticles = (
     "created_at",
     "votes",
     "article_img_url",
+    "comment_count"
   ];
   const validOrders = ["ASC", "DESC"];
   if (!validSortBys.includes(sort_by) || !validOrders.includes(order)) {
